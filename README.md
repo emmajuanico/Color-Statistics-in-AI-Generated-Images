@@ -26,6 +26,8 @@ distributions).
 - Stable Diffusion 3: Open-source (Stability AI)
 - Real images: Google Images (pre-2020))
 
+## Real dataset used
+https://www.kaggle.com/datasets/emmajuanico/color-statistics-in-ai-geneated-images/data
 
 ## Repository structure
 
