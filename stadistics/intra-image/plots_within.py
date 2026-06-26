@@ -148,57 +148,6 @@ def save_fig(fig, fname, suptitle):
     print("  Guardada: {}".format(fname))
     plt.close()
 
-#hist
-def make_hist_shared_y(metric_idx, bins, x_range, colors_plot,
-                        xlabel, suptitle, fname):
-    ymax = 0
-    for model_name, base_path in MODELS.items():
-        for color in colors_plot:
-            for segment in ["objecte", "fons"]:
-                data = get_pixels(base_path, color, segment)
-                if data[metric_idx] is None:
-                    continue
-                arr = data[metric_idx]
-                counts, _ = np.histogram(arr, bins=bins, range=x_range)
-                probs = counts / counts.sum()
-                ymax = max(ymax, probs.max())
-    ymax *= 1.12
-
-    fig, axes = setup_fig()
-
-    for ax, (model_name, base_path) in zip(axes, MODELS.items()):
-        style_ax(ax, model_name)
-        handles = []
-
-        for color in colors_plot:
-            hex_c, lbl = COLOR_LINE[color]
-
-            for segment, ls, alpha, lw in [("objecte", '-', 0.88, 1.1),
-                                            ("fons",    ':', 0.70, 1.0)]:
-                data = get_pixels(base_path, color, segment)
-                arr  = data[metric_idx]
-                if arr is None:
-                    continue
-                counts, edges = np.histogram(arr, bins=bins, range=x_range)
-                probs   = counts / counts.sum()
-                centers = (edges[:-1] + edges[1:]) / 2
-                line, = ax.plot(centers, probs, color=hex_c,
-                                linewidth=lw, linestyle=ls, alpha=alpha)
-                if segment == "objecte":
-                    line.set_label(lbl)
-                    handles.append(line)
-
-        ax.set_xlabel(xlabel, fontsize=8, color='#444444', labelpad=4)
-        ax.set_ylabel("Probabilitat", fontsize=8, color='#444444', labelpad=4)
-        ax.set_xlim(x_range)
-        ax.set_ylim(0, ymax)
-        ax.grid(True, color='#F2F2F2', linewidth=0.5, zorder=0)
-
-        if model_name == "sdxl_base" and handles:
-            add_legend(ax, handles, loc='upper right')
-
-    save_fig(fig, fname, suptitle)
-
 
 # cdf
 def make_cdf(metric_idx, x_range, colors_plot,
@@ -245,12 +194,6 @@ def make_cdf(metric_idx, x_range, colors_plot,
 
 
 # hue
-make_hist_shared_y(0, bins=360, x_range=(0, 360),
-                   colors_plot=COLORS_CROMATIC,
-                   xlabel="To $H^*$ (°)",
-                   suptitle="Distribucions within-image del To ($H^*$)",
-                   fname="opcioA_figura2_hist_hue.png")
-
 make_cdf(0, x_range=(0, 360),
          colors_plot=COLORS_CROMATIC,
          xlabel="To $H^*$ (°)",
@@ -258,12 +201,6 @@ make_cdf(0, x_range=(0, 360),
          fname="opcioB_figura2_cdf_hue.png")
 
 # chroma 
-make_hist_shared_y(1, bins=100, x_range=(0, 100),
-                   colors_plot=COLORS_ALL,
-                   xlabel="Croma $C^*$",
-                   suptitle="Distribucions within-image de la Croma ($C^*$)",
-                   fname="opcioA_figura3_hist_chroma.png")
-
 make_cdf(1, x_range=(0, 100),
          colors_plot=COLORS_ALL,
          xlabel="Croma $C^*$",
@@ -271,12 +208,6 @@ make_cdf(1, x_range=(0, 100),
          fname="opcioB_figura3_cdf_chroma.png")
 
 # lluminositat
-make_hist_shared_y(2, bins=100, x_range=(0, 100),
-                   colors_plot=COLORS_ALL,
-                   xlabel="Lluminositat $L^*$",
-                   suptitle="Distribucions within-image de la Lluminositat ($L^*$)",
-                   fname="opcioA_figura5_hist_lightness.png")
-
 make_cdf(2, x_range=(0, 100),
          colors_plot=COLORS_ALL,
          xlabel="Lluminositat $L^*$",
